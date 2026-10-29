@@ -1,0 +1,98 @@
+{
+  "_note": "Real response structure from a YouCam HD skin-analysis task (format: json), run 2026-10-30 on a licence-free stock portrait. Signed mask URLs replaced with placeholders. Note: one entry per region for hd_pore/hd_acne/hd_texture, any order.",
+  "status": 200,
+  "data": {
+    "error": null,
+    "results": {
+      "output": [
+        {
+          "ui_score": 86,
+          "mask_urls": [
+            "https://example.com/mask-1.png"
+          ],
+          "raw_score": 90.69480895996094,
+          "type": "hd_redness",
+          "url": null
+        },
+        {
+          "ui_score": 79,
+          "mask_urls": [
+            "https://example.com/mask-2.png"
+          ],
+          "raw_score": 76.23529411764706,
+          "type": "hd_texture",
+          "region": "whole",
+          "url": null
+        },
+        {
+          "ui_score": 87,
+          "mask_urls": [
+            "https://example.com/mask-3.png"
+          ],
+          "raw_score": 79.4115982055664,
+          "type": "hd_acne",
+          "region": "whole",
+          "url": null
+        },
+        {
+          "ui_score": 73,
+          "mask_urls": [
+            "https://example.com/mask-4.png"
+          ],
+          "raw_score": 61.50716781616211,
+          "type": "hd_pore",
+          "region": "forehead",
+          "url": null
+        },
+        {
+          "ui_score": 99,
+          "mask_urls": [
+            "https://example.com/mask-5.png"
+          ],
+          "raw_score": 100,
+          "type": "hd_pore",
+          "region": "nose",
+          "url": null
+        },
+        {
+          "ui_score": 76,
+          "mask_urls": [
+            "https://example.com/mask-6.png"
+          ],
+          "raw_score": 69.13095092773438,
+          "type": "hd_pore",
+          "region": "cheek",
+          "url": null
+        },
+        {
+          "ui_score": 78,
+          "mask_urls": [
+            "https://example.com/mask-7.png"
+          ],
+          "raw_score": 74.94226837158203,
+          "type": "hd_pore",
+          "region": "whole",
+          "url": null
+        },
+        {
+          "score": 82.5,
+          "type": "all",
+          "url": null
+        },
+        {
+          "score": 26,
+          "type": "skin_age",
+          "url": null
+        },
+        {
+          "mask_urls": [
+            "https://example.com/mask-8.png"
+          ],
+          "type": "resize_image",
+          "url": null
+        }
+      ]
+    },
+    "task_status": "success"
+  }
+}

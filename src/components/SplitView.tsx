@@ -38,7 +38,7 @@ export function SplitView({ trial, sessions, concern, asOfDay = Infinity }: { tr
     <section className="card space-y-3 p-3">
       <div className="flex items-baseline justify-between px-1">
         <span className="text-sm font-semibold">Split-face: {CONCERN_LABEL[concern]}</span>
-        <span className="text-xs text-muted">side score, higher = less detected</span>
+        <span className="text-xs text-muted">side score in raw-score points, higher = better</span>
       </div>
       {photoShot && <MaskPhoto shot={photoShot} concern={concern} treated={treated} />}
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Treated and untreated side scores over time">
@@ -102,7 +102,7 @@ function MaskPhoto({ shot, concern, treated }: { shot: Shot; concern: Concern; t
       <img src={shot.thumb} alt="Your latest check-in photo" className="block w-full" />
       {overlay && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={overlay} alt="" className="absolute inset-0 h-full w-full mix-blend-multiply" style={{ filter: "sepia(1) saturate(4) hue-rotate(-30deg)", opacity: 0.85 }} />
+        <img src={overlay} alt="" className="absolute inset-0 h-full w-full" />
       )}
       {mid && (
         <svg viewBox="0 0 1 1" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">

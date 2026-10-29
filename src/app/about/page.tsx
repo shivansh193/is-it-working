@@ -33,7 +33,7 @@ export default function About() {
       </Section>
 
       <Section title="Raw score, not UI score">
-        YouCam returns two scores per concern. The “UI score” is adjusted upward to motivate users; the raw score isn’t. Every number here is the raw score.
+        YouCam returns two scores per concern. The “UI score” is reshaped to look friendlier: in our tests a raw 46 showed as 66, which squeezes real differences together. Every number here is the raw score.
       </Section>
 
       <Section title="What YouCam does">

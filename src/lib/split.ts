@@ -48,17 +48,33 @@ export interface MaskLike {
   data: Uint8ClampedArray | Uint8Array;
 }
 
-export interface SideStats extends SideScores {
+export interface SideDensity {
+  /** Mean detection severity (0–1) on the image-left / image-right side of the midline, inside the face oval. */
+  left: number;
+  right: number;
   leftPx: number;
   rightPx: number;
 }
 
 /**
- * Mean detected severity (mask alpha) on each side of the face midline, inside the face oval,
- * reported as 0–100 where higher = less detected = better.
- * The mask is assumed to cover the whole source image (landmarks are normalised, so mask resolution doesn't matter).
+ * How much a mask pixel counts as a detection (0–1). YouCam's HD masks are drawn overlays, checked on real
+ * responses (2026-10-30): a grey (61,61,61) dimming layer at fixed opacity over everything not detected,
+ * white outlines of the analysed area, and coloured detection pixels whose opacity carries intensity.
+ * Only the coloured pixels count.
  */
-export function sideScores(mask: MaskLike, oval: Pt[], midline: Pt[], step = 1): SideStats {
+export function pixelSeverity(r: number, g: number, b: number, a: number): number {
+  if (a === 0) return 0;
+  if (Math.abs(r - 61) <= 3 && Math.abs(g - 61) <= 3 && Math.abs(b - 61) <= 3) return 0; // background layer
+  if (r >= 250 && g >= 250 && b >= 250) return 0; // area outline
+  return a / 255;
+}
+
+/**
+ * Detection density on each side of the face midline, inside the face oval.
+ * The mask must cover the whole photo (true for real responses: masks match the uploaded image size);
+ * landmarks are normalised, so mask resolution doesn't matter.
+ */
+export function sideDensity(mask: MaskLike, oval: Pt[], midline: Pt[], step = 1): SideDensity {
   const mid = [...midline].sort((a, b) => a.y - b.y);
   let ys = Infinity;
   let ye = -Infinity;
@@ -85,7 +101,8 @@ export function sideScores(mask: MaskLike, oval: Pt[], midline: Pt[], step = 1):
     for (let px = px0; px <= px1; px += step) {
       const x = (px + 0.5) / w;
       if (!insidePolygon(oval, x, y)) continue;
-      const a = data[(py * w + px) * 4 + 3] / 255;
+      const i = (py * w + px) * 4;
+      const a = pixelSeverity(data[i], data[i + 1], data[i + 2], data[i + 3]);
       if (x < mx) {
         lSum += a;
         lN++;
@@ -95,12 +112,21 @@ export function sideScores(mask: MaskLike, oval: Pt[], midline: Pt[], step = 1):
       }
     }
   }
-  return {
-    left: lN ? 100 * (1 - lSum / lN) : NaN,
-    right: rN ? 100 * (1 - rSum / rN) : NaN,
-    leftPx: lN,
-    rightPx: rN,
-  };
+  return { left: lN ? lSum / lN : NaN, right: rN ? rSum / rN : NaN, leftPx: lN, rightPx: rN };
+}
+
+/**
+ * Put side densities on YouCam's raw-score scale: split the whole-face deficit (100 − raw) between the sides in
+ * proportion to where the detections are. The two sides then average to the real raw score, and the noise prior
+ * means the same thing in split and whole-face mode. Detections cover well under 1% of the face for pores and
+ * acne, so a plain "100 − coverage" score would barely move.
+ */
+export function sidesInRawUnits(d: Pick<SideDensity, "left" | "right">, raw: number): SideScores {
+  const m = (d.left + d.right) / 2;
+  if (!Number.isFinite(m)) return { left: NaN, right: NaN };
+  if (m <= 0) return { left: raw, right: raw };
+  const deficit = 100 - raw;
+  return { left: 100 - (deficit * d.left) / m, right: 100 - (deficit * d.right) / m };
 }
 
 /** Treated − untreated side score. Positive = treated side looks better. */

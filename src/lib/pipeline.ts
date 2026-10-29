@@ -1,8 +1,8 @@
 "use client";
 import { FaceGeom } from "./facemesh";
 import { drawToCanvas, loadImage, thumb, toBlob } from "./image";
-import { sideScores } from "./split";
-import { Concern, Shot, SideScores } from "./types";
+import { pixelSeverity, sideDensity, sidesInRawUnits } from "./split";
+import { Concern, Shot } from "./types";
 import { uid } from "./db";
 
 export type Stage = "uploading" | "analyzing" | "masks" | "done";
@@ -74,7 +74,9 @@ export async function analyzeShot(
         console.warn(`[split] ${c} mask ${m.data.width}×${m.data.height} doesn't match photo ${canvas.width}×${canvas.height}; side scores skipped`);
         continue;
       }
-      shot.sides[c] =pickSides(sideScores(m.data, face.oval, face.midline, Math.max(1, Math.round(m.data.width / 400))));
+      const raw = shot.raw[c];
+      if (raw === undefined) continue;
+      shot.sides[c] = sidesInRawUnits(sideDensity(m.data, face.oval, face.midline, Math.max(1, Math.round(m.data.width / 600))), raw);
       shot.overlays[c] = m.preview;
     }
   }
@@ -82,9 +84,7 @@ export async function analyzeShot(
   return shot;
 }
 
-const pickSides = (s: SideScores): SideScores => ({ left: s.left, right: s.right });
-
-/** Some concerns (e.g. pores) return several masks; combine by max alpha. */
+/** Merge a concern's masks by max alpha (normally there is one: the "whole" region). */
 async function combinedMask(urls: string[]) {
   const imgs = await Promise.all(urls.map(loadImage));
   const w = imgs[0].naturalWidth;
@@ -96,7 +96,12 @@ async function combinedMask(urls: string[]) {
     const o = drawToCanvas(img, w, h).getContext("2d")!.getImageData(0, 0, w, h);
     for (let i = 3; i < data.data.length; i += 4) data.data[i] = Math.max(data.data[i], o.data[i]);
   }
-  ctx.putImageData(data, 0, 0);
+  // Preview shows detections only: drop the grey background layer and the outlines.
+  const view = new ImageData(new Uint8ClampedArray(data.data), w, h);
+  for (let i = 0; i < view.data.length; i += 4) {
+    if (pixelSeverity(view.data[i], view.data[i + 1], view.data[i + 2], view.data[i + 3]) === 0) view.data[i + 3] = 0;
+  }
+  ctx.putImageData(view, 0, 0);
   const pw = 360;
   const preview = drawToCanvas(c, pw, Math.round((h / w) * pw)).toDataURL("image/png");
   return { data, preview };

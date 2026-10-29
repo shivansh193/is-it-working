@@ -12,7 +12,7 @@ You spent ₹2,500 on a serum. Four weeks in, you're at the mirror asking whethe
 
 1. **Split-face trial.** You apply the product to one cheek only. Every photo then contains its own control: the other half of the same face, under the same light, on the same day. Lighting, sleep, diet and the camera hit both sides equally, so they cancel out. Published trials use the same design: Bissett et al. (Int J Cosmet Sci 2004) ran a 12-week split-face niacinamide trial, and Kafi et al. (Arch Dermatol 2007) tested retinol on one arm against vehicle on the other.
 2. **Your measurement noise, measured.** The baseline is 3 photos a minute apart, and every 3rd check-in takes 2. From these repeats we estimate how much *your* scores wobble per concern (pooled within-session SD, shrunk toward a prior until there's enough data). A change only counts if it beats that noise.
-3. **Raw scores, not UI scores.** YouCam returns a `ui_score` that is adjusted upward to motivate users, and a `raw_score` that isn't. Every verdict uses `raw_score`.
+3. **Raw scores, not UI scores.** YouCam returns a `ui_score` adjusted to motivate users, and a `raw_score` that isn't. In our test calls the UI score squeezes the scale: a raw 46 showed as 66, a raw 87 as 84, a raw 100 as 99. That shrinks real differences, so every verdict uses `raw_score`.
 4. **Time-to-effect.** Each product type has an earliest day an effect can plausibly show (e.g. niacinamide ~4 weeks, retinol ~8 weeks). Before that, the answer is “Too early to tell”, not “Not working”.
 5. **“Not enough data” is a real answer.** The app never guesses.
 
@@ -34,9 +34,10 @@ Every verdict carries its inputs (effect, SE, σ and its source, threshold, chec
 ## How split-face scoring works
 
 1. Each photo goes through MediaPipe Face Landmarker in the browser. That gives the face oval and a midline (forehead centre → nose bridge → nose tip → chin).
-2. YouCam returns one detection mask PNG per concern (`enable_mask_overlay: false`). When a concern has several masks, as pores do, they're merged by max alpha.
-3. For each side of the midline, inside the face oval, we take the mean mask alpha (detected severity) and report it as `100 × (1 − mean alpha)`: 0–100, higher means less detected.
+2. YouCam returns one mask PNG per concern (`enable_mask_overlay: false`), at exactly the size of the uploaded photo. The masks are drawn overlays: a grey (61,61,61) layer at fixed opacity over everything not detected, white outlines of the analysed area, and coloured detection pixels whose opacity carries intensity (redness tint, acne circles, pore and texture dots). We count only the coloured pixels.
+3. For each side of the midline, inside the face oval, we take the detection density. We then put it on the raw-score scale: the whole-face deficit (100 − raw) is split between the sides in proportion to their densities, so the two sides average to YouCam's own raw score. Detections cover well under 1% of the face for pores and acne, so a plain coverage percentage would barely move.
 4. **Validation (go/no-go)**: [`/validate`](src/app/validate/page.tsx) checks on 5+ untreated photos that the left − right gap is stable (SD ≤ 2σ√2). If the masks don't support this, split-face mode is dropped rather than faked. If a mask's aspect ratio doesn't match the photo, the side scores for that photo are skipped.
+5. **Checked on real responses (2026-10-30)**: on a licence-free stock portrait, the midline follows the face and the redness sides came out 67.5 / 68.8. Pores and texture leaned to one side (96.0 / 82.5), matching that photo's turn and side light. A constant lean is fine (d₀ removes it); stability across your own repeat shots is what `/validate` checks.
 
 ## YouCam API usage
 
@@ -51,7 +52,9 @@ Host `https://yce-api-01.makeupar.com`, Bearer key, server-side only ([`src/lib/
 | — | Fetch mask PNGs through a same-origin proxy that only accepts HMAC-signed URLs | `/api/mask` |
 
 - **HD concerns**: the trial's 1–3 targets, plus `hd_redness` and `hd_texture` as controls, capped at 4 per photo.
-- **Units** (docs table, HD): 1–4 concerns = 12 units, 5–8 = 16. So one photo is 12 units, and 1,000 units is ~83 photos. *Measured usage: [TO FILL after real calls].*
+- **Units** (docs table, HD): 1–4 concerns = 12 units, 5–8 = 16. So one photo is 12 units, and 1,000 units is ~83 photos. Tasks finish in about 5–7 s.
+- **Same photo, same score.** Sending an identical image twice returned identical scores to every decimal. YouCam adds no noise of its own; all scan-to-scan wobble comes from the capture (light, pose, camera). That's what the repeat-shot baseline measures.
+- **Response shape** (real, not just docs): `hd_pore`, `hd_acne` and `hd_texture` come back once per region (`forehead`, `nose`, `cheek`, `whole`), in any order. We score on `whole` and keep the rest. There's also an `all` score, `skin_age` and a `resize_image` entry. See [`fixtures/docs/task-real-shape.json`](fixtures/docs/task-real-shape.json).
 - **Capture rules enforced in the app**: short side ≥ 1080 px (upscaled with a note if the camera gives less), long side ≤ 2560, face width > 60% of the frame, a frontal pose, even left/right lighting, and holding still. YouCam error codes (`error_src_face_too_small`, `error_lighting_dark`, …) are turned into plain advice.
 
 ## Privacy

@@ -11,6 +11,8 @@ export interface ConcernResult {
   raw: number;
   ui?: number;
   masks: string[];
+  /** Per-region scores (e.g. hd_pore: forehead, nose, cheek). The top-level score is region "whole". */
+  regions?: Record<string, { raw: number; ui?: number; masks: string[] }>;
 }
 
 export interface ParsedTask {
@@ -48,6 +50,7 @@ export function parseTask(body: unknown): ParsedTask {
 
   const results = isObj(data.results) ? data.results : undefined;
   const output = results && Array.isArray(results.output) ? results.output : Array.isArray(data.output) ? data.output : [];
+  const byConcern: Partial<Record<Concern, Record<string, { raw: number; ui?: number; masks: string[] }>>> = {};
   for (const item of output) {
     if (!isObj(item) || typeof item.type !== "string") continue;
     const base = baseConcern(item.type);
@@ -59,10 +62,19 @@ export function parseTask(body: unknown): ParsedTask {
     } else if (base === "skin_age") {
       out.skinAge = num(item.score) ?? raw ?? ui;
     } else if (isConcern(base) && raw !== undefined) {
-      out.concerns[base] = { raw, ui, masks };
+      // Real responses repeat a type once per region (hd_pore: forehead, nose, cheek, whole), in any order.
+      const region = typeof item.region === "string" ? item.region : "whole";
+      (byConcern[base] ??= {})[region] = { raw, ui, masks };
+    } else if (base === "resize_image") {
+      // The image YouCam actually analysed; masks are in its coordinates.
     } else {
       out.other[item.type] = { raw, ui, masks };
     }
+  }
+  for (const [c, regs] of Object.entries(byConcern) as [Concern, Record<string, { raw: number; ui?: number; masks: string[] }>][]) {
+    const { whole, ...rest } = regs;
+    if (!whole) continue; // no overall score for this concern: don't invent one from regions
+    out.concerns[c] = Object.keys(rest).length ? { ...whole, regions: rest } : whole;
   }
   if (out.overall === undefined && isObj(results?.all)) out.overall = num(results.all.score);
   if (out.skinAge === undefined && results) out.skinAge = num(results.skin_age);

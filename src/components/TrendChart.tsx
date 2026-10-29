@@ -33,7 +33,9 @@ export function TrendChart({
   if (!base) return null;
   const b0 = mean(base.values);
   const pts = points.map((p) => ({ day: p.day, y: mean(p.values) - b0, shots: p.values.map((v) => v - b0), kind: p.kind }));
-  const ext = Math.max(bar * 1.6, 4, ...pts.flatMap((p) => p.shots.map(Math.abs))) * 1.1;
+  // No check-ins yet → no noise bar; draw the axes without a band.
+  const band = Number.isFinite(bar) ? bar : 0;
+  const ext = Math.max(band * 1.6, 4, ...pts.flatMap((p) => p.shots.map(Math.abs))) * 1.1;
   const xMax = Math.max(maxDay, 7);
   const x = (d: number) => pad.l + (d / xMax) * (W - pad.l - pad.r);
   const y = (v: number) => pad.t + ((ext - v) / (2 * ext)) * (H - pad.t - pad.b);
@@ -48,7 +50,7 @@ export function TrendChart({
         <span className="text-xs text-muted">{unit}</span>
       </figcaption>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={`${title}: change since baseline over ${maxDay} days, noise band ±${bar.toFixed(1)}`}>
-        {Number.isFinite(bar) && (
+        {band > 0 && (
           <rect x={pad.l} y={y(bar)} width={W - pad.l - pad.r} height={y(-bar) - y(bar)} fill="var(--v-noeffect-bg)" />
         )}
         {ticks.map((t) => (
@@ -72,7 +74,7 @@ export function TrendChart({
           p.shots.length > 1 ? p.shots.map((s, i) => <circle key={`${p.day}-${i}`} cx={x(p.day)} cy={y(s)} r="1.8" fill="var(--muted)" opacity="0.6" />) : [],
         )}
         {pts.map((p) => (
-          <circle key={p.day} cx={x(p.day)} cy={y(p.y)} r={p.kind === "baseline" ? 4 : 3.4} fill={Math.abs(p.y) > bar ? "var(--accent)" : "#fff"} stroke="var(--accent)" strokeWidth="1.6" />
+          <circle key={p.day} cx={x(p.day)} cy={y(p.y)} r={p.kind === "baseline" ? 4 : 3.4} fill={band > 0 && Math.abs(p.y) > band ? "var(--accent)" : "#fff"} stroke="var(--accent)" strokeWidth="1.6" />
         ))}
         {[0, Math.round(xMax / 2), xMax].map((d) => (
           <text key={d} x={x(d)} y={H - 8} textAnchor={d === 0 ? "start" : d === xMax ? "end" : "middle"} fontSize="10" fill="var(--muted)">
