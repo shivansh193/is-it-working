@@ -6,7 +6,7 @@ import { getTrial, listSessions, putSession, uid } from "@/lib/db";
 import { nextCheckinShots } from "@/lib/analysis";
 import { shotConcerns, hdUnits } from "@/lib/budget";
 import { FaceGeom } from "@/lib/facemesh";
-import { analyzeShot, Stage } from "@/lib/pipeline";
+import { AccessCodeError, analyzeShot, getAccessCode, setAccessCode, Stage } from "@/lib/pipeline";
 import { Session, Trial } from "@/lib/types";
 import { estimateNoise } from "@/lib/noise";
 import { CONCERN_LABEL } from "@/lib/types";
@@ -27,6 +27,9 @@ function CapturePage() {
   const [error, setError] = useState<string | null>(null);
   const busy = stage !== null && stage !== "done";
   const sessionRef = useRef<Session | null>(null);
+  const lastShot = useRef<{ canvas: HTMLCanvasElement; face: FaceGeom | null } | null>(null);
+  const [needCode, setNeedCode] = useState(false);
+  const [code, setCode] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -43,6 +46,7 @@ function CapturePage() {
 
   const onShot = async (canvas: HTMLCanvasElement, face: FaceGeom | null) => {
     setError(null);
+    lastShot.current = { canvas, face };
     if (!face) return setError("No face found in that photo. Centre your face in the outline and try again.");
     if (face.widthFrac < 0.6) return setError("Your face needs to fill more of the photo (YouCam needs over 60% of the width). Move closer.");
     try {
@@ -60,8 +64,17 @@ function CapturePage() {
       if (s.shots.length >= total) router.push(`/trial?id=${trial.id}&fresh=1`);
     } catch (e) {
       setStage(null);
-      setError((e as Error).message);
+      if (e instanceof AccessCodeError) {
+        setCode(getAccessCode());
+        setNeedCode(true);
+      } else setError((e as Error).message);
     }
+  };
+
+  const retryWithCode = () => {
+    setAccessCode(code);
+    setNeedCode(false);
+    if (lastShot.current) onShot(lastShot.current.canvas, lastShot.current.face);
   };
 
   const noise = session && session.shots.length >= 2 ? concerns.map((c) => [c, estimateNoise([session.shots.map((s) => s.raw[c] ?? NaN)])] as const) : null;
@@ -90,6 +103,27 @@ function CapturePage() {
         </p>
       )}
       {error && <p className="rounded-xl bg-[var(--v-worse-bg)] p-3 text-sm text-[var(--v-worse)]">{error}</p>}
+      {needCode && (
+        <form
+          className="card space-y-2 p-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            retryWithCode();
+          }}
+        >
+          <label className="block space-y-1.5">
+            <span className="label block">Access code</span>
+            <span className="block text-sm text-muted">
+              Each analysis spends paid YouCam API units, so this public demo asks for a code. Your photo is kept and will be analysed as soon as the code is right.
+            </span>
+            <input className="field" autoFocus autoCapitalize="none" autoComplete="off" value={code} onChange={(e) => setCode(e.target.value)} />
+          </label>
+          <button className="btn btn-primary w-full" disabled={!code.trim()}>
+            Analyse photo
+          </button>
+          <p className="text-xs text-muted">No code? The simulated demo trial works without one.</p>
+        </form>
+      )}
       {session?.shots.some((s) => s.mock) && (
         <p className="rounded-xl border border-dashed border-line p-3 text-xs text-muted">Mock mode: no API key is set, so scores are made up and no units are spent.</p>
       )}

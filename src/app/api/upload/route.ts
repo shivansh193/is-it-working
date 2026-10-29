@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { YouCamError, isMock, uploadImage } from "@/lib/youcam/client";
+import { requireAccess } from "@/lib/youcam/access";
 
 export const runtime = "nodejs";
 const MAX = 10 * 1024 * 1024;
@@ -8,6 +9,8 @@ const MAX = 10 * 1024 * 1024;
 export async function POST(req: NextRequest) {
   const type = req.headers.get("content-type") ?? "";
   if (!/^image\/(jpeg|png)$/.test(type)) return NextResponse.json({ error: "Send image/jpeg or image/png" }, { status: 415 });
+  const denied = isMock() ? null : requireAccess(req);
+  if (denied) return denied;
   const bytes = new Uint8Array(await req.arrayBuffer());
   if (bytes.byteLength === 0 || bytes.byteLength > MAX) return NextResponse.json({ error: "Image must be 1 byte – 10 MB" }, { status: 413 });
   if (isMock()) return NextResponse.json({ fileId: `mockfile_${bytes.byteLength}`, mock: true });

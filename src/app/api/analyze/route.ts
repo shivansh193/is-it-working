@@ -4,6 +4,7 @@ import { mockTaskId } from "@/lib/youcam/mock";
 import { toDstActions } from "@/lib/youcam/parse";
 import { hdUnits } from "@/lib/budget";
 import { isConcern } from "@/lib/types";
+import { requireAccess } from "@/lib/youcam/access";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,8 @@ export async function POST(req: NextRequest) {
   const dst = toDstActions(concerns);
   const units = hdUnits(dst.length);
   if (isMock()) return NextResponse.json({ taskId: mockTaskId(dst), units: 0, mock: true });
+  const denied = requireAccess(req);
+  if (denied) return denied;
   try {
     const taskId = await createTask(fileId, dst);
     console.info(`[youcam] task ${taskId} created: ${dst.join(",")} (expected ${units} units on success)`);

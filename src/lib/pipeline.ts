@@ -15,8 +15,31 @@ interface TaskResult {
   mock: boolean;
 }
 
+/** Thrown when the server wants the access code (production guards the routes that spend units). */
+export class AccessCodeError extends Error {
+  constructor() {
+    super("Enter the access code to analyse photos.");
+  }
+}
+
+const CODE = "iiw-access-code";
+export function getAccessCode(): string {
+  try {
+    return localStorage.getItem(CODE) ?? "";
+  } catch {
+    return "";
+  }
+}
+export function setAccessCode(code: string) {
+  try {
+    localStorage.setItem(CODE, code.trim());
+  } catch {}
+}
+const withCode = (h: Record<string, string>) => ({ ...h, "x-access-code": getAccessCode() });
+
 async function json<T>(res: Response): Promise<T> {
   const body = await res.json().catch(() => ({}));
+  if (res.status === 401 && (body as { error?: string }).error === "access_code_required") throw new AccessCodeError();
   if (!res.ok) throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`);
   return body as T;
 }
@@ -34,11 +57,11 @@ export async function analyzeShot(
 ): Promise<Shot> {
   onStage("uploading");
   const blob = await toBlob(canvas);
-  const { fileId } = await json<{ fileId: string }>(await fetch("/api/upload", { method: "POST", headers: { "Content-Type": "image/jpeg" }, body: blob }));
+  const { fileId } = await json<{ fileId: string }>(await fetch("/api/upload", { method: "POST", headers: withCode({ "Content-Type": "image/jpeg" }), body: blob }));
 
   onStage("analyzing");
   const { taskId, units } = await json<{ taskId: string; units: number }>(
-    await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fileId, concerns }) }),
+    await fetch("/api/analyze", { method: "POST", headers: withCode({ "Content-Type": "application/json" }), body: JSON.stringify({ fileId, concerns }) }),
   );
 
   let result: TaskResult | null = null;
