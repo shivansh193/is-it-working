@@ -17,7 +17,7 @@ export default function About() {
       <Section title="Split-face: the strong design">
         You apply the product to one cheek only. Every photo then contains its own control: the other side of the same face, under the same light, on the same day.
         We find the face midline with MediaPipe Face Mesh and measure YouCam’s per-concern detection mask on each side. What we track is the gap between the sides
-        compared with the gap at baseline. Dermatology trials use this split-face design for the same reason.
+        compared with the gap at baseline. Published trials use this design for the same reason: Bissett et al. (2004) tested niacinamide on one half of the face against a control on the other, and Kafi et al. (2007) tested retinol on one arm against vehicle on the other.
       </Section>
 
       <Section title="Your own noise">
@@ -45,11 +45,14 @@ export default function About() {
         <ul className="mt-1 space-y-1 text-sm">
           {CATEGORIES.map((c) => (
             <li key={c.id}>
-              <b>{c.label}</b>: earliest day {c.minDays}, typical {c.typicalDays}. <span className="text-muted">{c.source}</span>
+              <b>{c.label}</b>: judged from day {c.minDays}; trials ran ~{c.typicalDays} days.{" "}
+              <span className="text-muted">
+                {c.source} {c.verified ? "✓ checked" : "(not yet checked)"}
+              </span>
             </li>
           ))}
         </ul>
-        <p className="mt-2 text-sm text-muted">These timings come from published trials. They are being checked against the papers.</p>
+        <p className="mt-2 text-sm text-muted">Trial lengths come from the papers. The “judged from” day is our own conservative cut-off, set earlier than the trial endpoints.</p>
       </Section>
 
       <Section title="Privacy">

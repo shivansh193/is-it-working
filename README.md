@@ -10,7 +10,7 @@ You spent ₹2,500 on a serum. Four weeks in, you're at the mirror asking whethe
 
 ## What the app does differently
 
-1. **Split-face trial.** You apply the product to one cheek only. Every photo then contains its own control: the other half of the same face, under the same light, on the same day. Lighting, sleep, diet and the camera hit both sides equally, so they cancel out. Clinical dermatology trials use this split-face design for the same reason.
+1. **Split-face trial.** You apply the product to one cheek only. Every photo then contains its own control: the other half of the same face, under the same light, on the same day. Lighting, sleep, diet and the camera hit both sides equally, so they cancel out. Published trials use the same design: Bissett et al. (Int J Cosmet Sci 2004) ran a 12-week split-face niacinamide trial, and Kafi et al. (Arch Dermatol 2007) tested retinol on one arm against vehicle on the other.
 2. **Your measurement noise, measured.** The baseline is 3 photos a minute apart, and every 3rd check-in takes 2. From these repeats we estimate how much *your* scores wobble per concern (pooled within-session SD, shrunk toward a prior until there's enough data). A change only counts if it beats that noise.
 3. **Raw scores, not UI scores.** YouCam returns a `ui_score` that is adjusted upward to motivate users, and a `raw_score` that isn't. Every verdict uses `raw_score`.
 4. **Time-to-effect.** Each product type has an earliest day an effect can plausibly show (e.g. niacinamide ~4 weeks, retinol ~8 weeks). Before that, the answer is “Too early to tell”, not “Not working”.
@@ -69,7 +69,7 @@ Live, real parts: guided baseline capture, noise estimates from real repeat shot
 - Phone cameras, light and angle still add noise. Split-face cancels most of it, not all.
 - With few check-ins the error bars are wide, which is why “not enough data” comes up often early on.
 - The noise prior (σ₀ = 3) is a placeholder until it's calibrated on real repeat scans.
-- The time-to-effect values come from published trials ([`categories.ts`](src/lib/categories.ts)), but the references are still being checked against the papers.
+- Trial lengths for niacinamide, vitamin C and retinol are checked against the published abstracts; the other product types are not yet. The “judge from” day for each type is our own conservative cut-off, not a number from the papers ([`categories.ts`](src/lib/categories.ts)).
 - This is not medical advice. See a dermatologist for skin conditions.
 
 ## Run it

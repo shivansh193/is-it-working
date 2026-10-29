@@ -66,8 +66,8 @@ function TrialPage() {
       {hasBaseline && <Results trial={trial} sessions={sessions} />}
 
       <p className="text-xs text-muted">
-        Timing for this product type: earliest effect day {cat.minDays}, typical {cat.typicalDays} days. Source: {cat.source}
-        {!cat.verified && " (reference being verified)"}
+        Timing for this product type: we judge from day {cat.minDays}; published trials ran about {cat.typicalDays} days. Source: {cat.source}
+        {cat.verified ? " (checked against the published abstract)" : " (reference not yet checked)"}
       </p>
 
       <button
