@@ -5,6 +5,12 @@ import { Verdict, VerdictSession, decide } from "./verdict";
 
 const DAY = 86_400_000;
 
+/** YYYY-MM-DD in the user's own timezone (toISOString would give the UTC date). */
+export function localDate(d = new Date()): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
 export function dayOf(trial: Trial, iso: string): number {
   const start = new Date(trial.startDate + "T00:00:00").getTime();
   return Math.max(0, Math.round((new Date(iso).getTime() - start) / DAY));

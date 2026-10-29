@@ -12,7 +12,7 @@ export default function Demo() {
   const cat = getCategory(trial.category);
   return (
     <div className="space-y-4">
-      <div className="sim-banner sticky top-2 z-10 rounded-2xl px-4 py-3 text-sm">
+      <div className="sim-banner rounded-2xl px-4 py-3 text-sm">
         <b>Simulated data.</b> A made-up 6-week trial built from a baseline plus a documented synthetic drift. It shows how the verdict changes; it is not a result
         from a real person.
       </div>
@@ -35,6 +35,9 @@ export default function Demo() {
         </div>
       </div>
       <Results trial={trial} sessions={sessions} asOfDay={day} simulated />
+      <div className="sim-banner pointer-events-none fixed bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold shadow-sm">
+        Simulated data
+      </div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export function mockTaskId(dstActions: string[]): string {
 }
 
 export function mockTask(taskId: string): unknown {
-  const [, seedStr, enc] = taskId.split("_");
+  const [, seedStr, enc] = taskId.match(/^mock_(\d+)_(.*)$/) ?? [];
   const actions = Buffer.from(enc ?? "", "base64url").toString().split(",").filter(Boolean);
   const r = rng(Number(seedStr) || 1);
   const base: Record<string, number> = { hd_redness: 68, hd_acne: 74, hd_texture: 61, hd_pore: 57, hd_age_spot: 70, hd_moisture: 55, hd_oiliness: 63, hd_wrinkle: 66 };

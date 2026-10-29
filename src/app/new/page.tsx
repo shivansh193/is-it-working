@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CATEGORIES, getCategory } from "@/lib/categories";
 import { putTrial, uid } from "@/lib/db";
 import { userSideToImage } from "@/lib/split";
+import { localDate } from "@/lib/analysis";
 import { CONCERNS, CONCERN_LABEL, Concern, TrialMode } from "@/lib/types";
 
 export default function NewTrial() {
@@ -11,7 +12,7 @@ export default function NewTrial() {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("niacinamide");
   const [concerns, setConcerns] = useState<Concern[]>(getCategory("niacinamide").suggested.slice(0, 2));
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(localDate());
   const [link, setLink] = useState("");
   const [price, setPrice] = useState("");
   const [supplyDays, setSupplyDays] = useState("60");
@@ -70,7 +71,7 @@ export default function NewTrial() {
         </p>
       </Field>
 
-      <Field label="What do you hope it fixes? (up to 3)">
+      <Field label="What do you hope it fixes? (up to 3)" group>
         <div className="flex flex-wrap gap-2">
           {CONCERNS.map((c) => (
             <button key={c} className="chip" aria-pressed={concerns.includes(c)} onClick={() => toggle(c)}>
@@ -80,7 +81,7 @@ export default function NewTrial() {
         </div>
       </Field>
 
-      <Field label="How to test">
+      <Field label="How to test" group>
         <div className="grid gap-2">
           <Choice on={mode === "split"} onClick={() => setMode("split")} title="Split-face (recommended)">
             Use the product on one side of your face only. Each check compares the two sides in the same photo, so lighting, sleep and the camera cancel out.
@@ -91,10 +92,10 @@ export default function NewTrial() {
           </Choice>
         </div>
         {mode === "split" && (
-          <div className="mt-3 flex items-center gap-2 text-sm">
-            <span>Apply only to</span>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+            <span className="whitespace-nowrap">Apply only to</span>
             {(["my-left", "my-right"] as const).map((s) => (
-              <button key={s} className="chip" aria-pressed={side === s} onClick={() => setSide(s)}>
+              <button key={s} className="chip whitespace-nowrap" aria-pressed={side === s} onClick={() => setSide(s)}>
                 {s === "my-left" ? "my left cheek" : "my right cheek"}
               </button>
             ))}
@@ -104,7 +105,7 @@ export default function NewTrial() {
 
       <div className="grid grid-cols-2 gap-3">
         <Field label="Started on">
-          <input type="date" className="field" value={startDate} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setStartDate(e.target.value)} />
+          <input type="date" className="field" value={startDate} max={localDate()} onChange={(e) => setStartDate(e.target.value)} />
         </Field>
         <Field label="Price (₹, optional)">
           <input inputMode="numeric" className="field" placeholder="2500" value={price} onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))} />
@@ -131,12 +132,14 @@ export default function NewTrial() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+/** `group` for sets of buttons: a <label> around several buttons would forward clicks on its text to the first one. */
+function Field({ label, group, children }: { label: string; group?: boolean; children: React.ReactNode }) {
+  const Tag = group ? "div" : "label";
   return (
-    <label className="block space-y-1.5">
-      <span className="label">{label}</span>
+    <Tag className="block space-y-1.5" {...(group ? { role: "group", "aria-label": label } : {})}>
+      <span className="label block">{label}</span>
       {children}
-    </label>
+    </Tag>
   );
 }
 

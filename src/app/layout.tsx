@@ -20,12 +20,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${display.variable} ${body.variable}`}>
         <div className="mx-auto flex min-h-dvh max-w-[560px] flex-col px-4">
           <header className="flex items-center justify-between py-4">
-            <Link href="/" className="display text-xl font-semibold">
+            <Link href="/" className="display text-xl font-semibold whitespace-nowrap">
               Is it working?
             </Link>
-            <div className="flex items-center gap-3 text-sm">
+            <div className="flex items-center gap-2 text-sm">
               <UnitBadge />
-              <Link href="/about" className="text-muted underline-offset-4 hover:underline">
+              <Link href="/about" className="whitespace-nowrap text-muted underline-offset-4 hover:underline">
                 How it works
               </Link>
             </div>

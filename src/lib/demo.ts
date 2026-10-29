@@ -1,4 +1,5 @@
 import { rng } from "./stats";
+import { localDate } from "./analysis";
 import { Concern, Session, Shot, Trial } from "./types";
 
 /**
@@ -29,7 +30,7 @@ export function buildDemo(seed = 7): { trial: Trial; sessions: Session[] } {
   const r = rng(seed);
   const start = new Date();
   start.setDate(start.getDate() - DEMO_DAYS);
-  const startDate = start.toISOString().slice(0, 10);
+  const startDate = localDate(start);
   const trial: Trial = {
     id: "demo",
     name: "Niacinamide 10% serum (demo)",

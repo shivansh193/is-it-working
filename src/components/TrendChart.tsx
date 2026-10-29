@@ -75,7 +75,7 @@ export function TrendChart({
           <circle key={p.day} cx={x(p.day)} cy={y(p.y)} r={p.kind === "baseline" ? 4 : 3.4} fill={Math.abs(p.y) > bar ? "var(--accent)" : "#fff"} stroke="var(--accent)" strokeWidth="1.6" />
         ))}
         {[0, Math.round(xMax / 2), xMax].map((d) => (
-          <text key={d} x={x(d)} y={H - 8} textAnchor="middle" fontSize="10" fill="var(--muted)">
+          <text key={d} x={x(d)} y={H - 8} textAnchor={d === 0 ? "start" : d === xMax ? "end" : "middle"} fontSize="10" fill="var(--muted)">
             day {d}
           </text>
         ))}

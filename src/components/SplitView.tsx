@@ -56,7 +56,7 @@ export function SplitView({ trial, sessions, concern, asOfDay = Infinity }: { tr
           <circle key={r.day} cx={x(r.day)} cy={y(r.t)} r="3" fill="var(--accent)" />
         ))}
         {[0, xMax].map((d) => (
-          <text key={d} x={x(d)} y={H - 6} textAnchor="middle" fontSize="10" fill="var(--muted)">
+          <text key={d} x={x(d)} y={H - 6} textAnchor={d === 0 ? "start" : d === xMax ? "end" : "middle"} fontSize="10" fill="var(--muted)">
             day {d}
           </text>
         ))}

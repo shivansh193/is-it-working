@@ -16,8 +16,8 @@ export function UnitBadge() {
   if (!show || spent === null) return null;
   const start = Number(process.env.NEXT_PUBLIC_UNIT_START) || 1000;
   return (
-    <span className="rounded-full border border-dashed border-line px-2 py-0.5 font-mono text-[11px] text-muted" title="Dev only. Counted in this browser from successful tasks.">
-      dev · {start - spent} units left
+    <span className="whitespace-nowrap rounded-full border border-dashed border-line px-2 py-0.5 font-mono text-[11px] text-muted" title="Dev only. Counted in this browser from successful tasks.">
+      dev · {start - spent}u
     </span>
   );
 }
