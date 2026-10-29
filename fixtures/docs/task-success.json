@@ -1,0 +1,18 @@
+{
+  "_note": "Shaped after the docs example for format:json (docs.perfectcorp.com/reference/ai_skin_analysis). Values are illustrative, not a real response. Real responses go in fixtures/real/ (git-ignored).",
+  "status": 200,
+  "data": {
+    "task_status": "success",
+    "results": {
+      "output": [
+        { "type": "hd_redness", "ui_score": 82, "raw_score": 64.31, "mask_urls": ["https://example.com/hd_redness_output.png"] },
+        { "type": "hd_texture", "ui_score": 77, "raw_score": 58.02, "mask_urls": ["https://example.com/hd_texture_output.png"] },
+        { "type": "hd_acne", "ui_score": 90, "raw_score": "71.5", "mask_urls": [] },
+        { "type": "hd_pore", "ui_score": 70, "raw_score": 52.9, "mask_urls": ["https://example.com/hd_pore_output_cheek.png", "https://example.com/hd_pore_output_nose.png"] },
+        { "type": "hd_mystery", "ui_score": 50, "raw_score": 40, "mask_urls": [] },
+        { "type": "all", "score": 75.76 },
+        { "type": "skin_age", "score": 37 }
+      ]
+    }
+  }
+}
