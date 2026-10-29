@@ -43,3 +43,6 @@ next-env.d.ts
 # real API responses and photos of real faces — never commit
 fixtures/real/
 !.env.example
+
+# copied from node_modules on install
+/public/mediapipe/

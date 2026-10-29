@@ -55,7 +55,12 @@ export interface Shot {
   taskId?: string;
   raw: Partial<Record<Concern, number>>;
   sides?: Partial<Record<Concern, SideScores>>;
-  thumb?: string; // small data URL, only if the user keeps photos
+  /** Small JPEG data URL, stored on this device only. */
+  thumb?: string;
+  /** Low-res mask PNG data URLs per concern, for the overlay view. */
+  overlays?: Partial<Record<Concern, string>>;
+  /** Face midline in normalised image coords, for drawing the split. */
+  midline?: { x: number; y: number }[];
   units?: number;
   mock?: boolean;
 }
