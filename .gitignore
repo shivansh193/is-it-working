@@ -47,3 +47,6 @@ fixtures/real/
 # copied from node_modules on install
 /public/mediapipe/
 /public/_probe/
+
+.vercel
+.env*

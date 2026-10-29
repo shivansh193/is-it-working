@@ -1,0 +1,8 @@
+# Never upload local secrets, real API responses or test photos
+.env*
+!.env.example
+fixtures/real
+public/_probe
+public/mediapipe
+.next
+node_modules
