@@ -122,3 +122,34 @@ describe("verdict — split face", () => {
 });
 
 describe("budget", () => budgetFixtures());
+
+describe("per-concern measurement in split-face trials", async () => {
+  const { measurementFor, trialVerdict } = await import("../analysis");
+  const trial = {
+    id: "t", name: "t", category: "niacinamide", concerns: ["redness", "pore"] as ("redness" | "pore")[],
+    startDate: "2026-11-01", mode: "split" as const, treatedSide: "image-right" as const, createdAt: "2026-11-01",
+  };
+  // Measured 2026-11-02: redness gap steady, pores gap jumps while the whole-face pore score is steady.
+  const shot = (redL: number, redR: number, rawRed: number, poreL: number, poreR: number, rawPore: number) => ({
+    id: "s", takenAt: "", raw: { redness: rawRed, pore: rawPore },
+    sides: { redness: { left: redL, right: redR }, pore: { left: poreL, right: poreR } },
+  });
+  const sessions = [
+    { id: "a", trialId: "t", date: "2026-11-01T08:00:00", kind: "baseline" as const,
+      shots: [shot(45, 55, 51, 20, 13, 10.3), shot(44, 55, 52, 0, 25, 14.0), shot(45, 55, 47, 18, 14, 9.5)] },
+    { id: "b", trialId: "t", date: "2026-11-01T09:00:00", kind: "baseline" as const,
+      shots: [shot(46, 54, 52, 12, 11, 8.4), shot(45, 55, 52, 2, 19, 12.1), shot(46, 54, 48, 10, 12, 9.8)] },
+  ];
+  it("keeps split-face where the gap is steady", () => {
+    expect(measurementFor(trial, sessions, "redness")).toEqual({ mode: "split" });
+  });
+  it("falls back to whole face where the gap is much noisier than the whole-face score", () => {
+    const m = measurementFor(trial, sessions, "pore");
+    expect(m.mode).toBe("whole");
+    expect(m.fallback!.splitSigma).toBeGreaterThan(2 * m.fallback!.wholeSigma);
+    expect(trialVerdict(trial, sessions, "pore").mode).toBe("whole");
+  });
+  it("whole-face trials never fall back", () => {
+    expect(measurementFor({ ...trial, mode: "whole" }, sessions, "pore")).toEqual({ mode: "whole" });
+  });
+});

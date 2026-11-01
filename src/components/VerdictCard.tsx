@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Verdict, VerdictKind, VERDICT_COPY, K, MIN_CHECKINS } from "@/lib/verdict";
 import { CONCERN_LABEL, Concern } from "@/lib/types";
+import type { Measurement } from "@/lib/analysis";
 
 const TONE: Record<VerdictKind, { fg: string; bg: string }> = {
   working: { fg: "var(--v-working)", bg: "var(--v-working-bg)" },
@@ -15,7 +16,7 @@ export const verdictTone = (k: VerdictKind) => TONE[k];
 const fmt = (x: number, d = 1) => (Number.isFinite(x) ? x.toFixed(d) : "—");
 const signed = (x: number) => (Number.isFinite(x) ? (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(1) : "—");
 
-export function VerdictCard({ concern, v }: { concern: Concern; v: Verdict }) {
+export function VerdictCard({ concern, v }: { concern: Concern; v: Verdict & Partial<Measurement> }) {
   const [open, setOpen] = useState(false);
   const tone = TONE[v.kind];
   const copy = VERDICT_COPY[v.kind];
@@ -37,6 +38,12 @@ export function VerdictCard({ concern, v }: { concern: Concern; v: Verdict }) {
             {copy.title}
           </h3>
           <p className="mt-1 text-sm text-ink/80">{v.reason}</p>
+          {v.fallback && (
+            <p className="mt-1.5 text-xs text-ink/70">
+              Measured whole-face: on your repeat shots the left/right gap varied ±{fmt(v.fallback.splitSigma)}, more than twice the whole-face
+              score (±{fmt(v.fallback.wholeSigma)}).
+            </p>
+          )}
         </div>
       </div>
       <dl className="grid grid-cols-4 gap-2 border-t border-line px-4 py-3 text-center text-xs">

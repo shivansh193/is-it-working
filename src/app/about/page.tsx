@@ -17,7 +17,17 @@ export default function About() {
       <Section title="Split-face: the strong design">
         You apply the product to one cheek only. Every photo then contains its own control: the other side of the same face, under the same light, on the same day.
         We find the face midline with MediaPipe Face Mesh and measure YouCam’s per-concern detection mask on each side. What we track is the gap between the sides
-        compared with the gap at baseline. Published trials use this design for the same reason: Bissett et al. (2004) tested niacinamide on one half of the face against a control on the other, and Kafi et al. (2007) tested retinol on one arm against vehicle on the other.
+        compared with the gap at baseline. Published trials use this design for the same reason: Bissett et al. (2004) tested niacinamide on one half of the face against a control on the other, and Kafi et al. (2007) tested retinol on one arm against vehicle on the other. Split-face is used concern by concern: if
+        your own repeat shots show a concern&apos;s left/right gap is more than twice as noisy as its whole-face score, that concern
+        is judged on the whole-face trend instead, and its card says so.
+      </Section>
+
+      <Section title="Does it actually detect a change?">
+        We tested the measurement with real YouCam calls on a licence-free stock face, through a fake camera. Across 6 untreated
+        photos, the redness gap between the cheeks varied by only ±1.4 points. Then we added a known soft red tint to one cheek:
+        the gap moved by 17.2 points, on the right side, about 22 times its standard error. Pores didn&apos;t move (correctly), but
+        their gap jumped by ±13 between untreated photos, so pores fall back to whole-face scoring. This tests the measurement,
+        not a skincare product, and it&apos;s one face, not a clinical study.
       </Section>
 
       <Section title="Your own noise">

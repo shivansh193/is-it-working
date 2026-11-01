@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { costSoFar, rawSeries, trialVerdict, verdictSessions } from "@/lib/analysis";
+import { Measurement, costSoFar, rawSeries, trialVerdict, verdictSessions } from "@/lib/analysis";
 import { getCategory } from "@/lib/categories";
 import { download, renderShareCard } from "@/lib/share";
 import { CONCERN_LABEL, Concern, Session, Trial } from "@/lib/types";
@@ -11,7 +11,7 @@ import { SplitView } from "./SplitView";
 
 export function Results({ trial, sessions, asOfDay = Infinity, simulated = false }: { trial: Trial; sessions: Session[]; asOfDay?: number; simulated?: boolean }) {
   const cat = getCategory(trial.category);
-  const verdicts = useMemo(() => trial.concerns.map((c) => [c, trialVerdict(trial, sessions, c, asOfDay)] as [Concern, Verdict]), [trial, sessions, asOfDay]);
+  const verdicts = useMemo(() => trial.concerns.map((c) => [c, trialVerdict(trial, sessions, c, asOfDay)] as [Concern, Verdict & Measurement]), [trial, sessions, asOfDay]);
   const [focus, setFocus] = useState<Concern>(trial.concerns[0]);
   const fv = verdicts.find(([c]) => c === focus)?.[1];
   const days = verdicts[0]?.[1].days ?? 0;
@@ -35,7 +35,7 @@ export function Results({ trial, sessions, asOfDay = Infinity, simulated = false
       )}
 
       {fv &&
-        (trial.mode === "split" ? (
+        (fv.mode === "split" ? (
           <>
             <TrendChart
               title={`Treated − untreated gap: ${CONCERN_LABEL[focus]}`}
@@ -48,13 +48,17 @@ export function Results({ trial, sessions, asOfDay = Infinity, simulated = false
             <SplitView trial={trial} sessions={sessions} concern={focus} asOfDay={asOfDay} />
           </>
         ) : (
-          <TrendChart
-            title={`Raw score: ${CONCERN_LABEL[focus]}`}
-            points={rawSeries(trial, sessions, focus, asOfDay)}
-            bar={fv.threshold}
-            maxDay={Math.max(days, cat.minDays)}
-            minDays={cat.minDays}
-          />
+          <>
+            <TrendChart
+              title={`Raw score: ${CONCERN_LABEL[focus]}`}
+              points={rawSeries(trial, sessions, focus, asOfDay)}
+              bar={fv.threshold}
+              maxDay={Math.max(days, cat.minDays)}
+              minDays={cat.minDays}
+            />
+            {/* A split-face trial that fell back to whole face still shows the sides, for transparency. */}
+            {trial.mode === "split" && <SplitView trial={trial} sessions={sessions} concern={focus} asOfDay={asOfDay} />}
+          </>
         ))}
 
       <button
@@ -67,7 +71,7 @@ export function Results({ trial, sessions, asOfDay = Infinity, simulated = false
   );
 }
 
-function Rebuy({ trial, verdicts, days }: { trial: Trial; verdicts: Array<[Concern, Verdict]>; days: number }) {
+function Rebuy({ trial, verdicts, days }: { trial: Trial; verdicts: Array<[Concern, Verdict & Measurement]>; days: number }) {
   const cat = getCategory(trial.category);
   const by = (k: Verdict["kind"]) => verdicts.filter(([, v]) => v.kind === k).map(([c]) => CONCERN_LABEL[c].toLowerCase());
   const working = by("working");
@@ -89,6 +93,16 @@ function Rebuy({ trial, verdicts, days }: { trial: Trial; verdicts: Array<[Conce
       {cost !== undefined && (
         <p className="mt-2 text-sm text-muted">
           Spent so far: ₹{Math.round(cost).toLocaleString("en-IN")} of ₹{trial.price!.toLocaleString("en-IN")} ({days} of ~{trial.supplyDays} days of product).
+        </p>
+      )}
+      {working.length > 0 && !worse.length && trial.link && (
+        <a href={trial.link} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-3 w-full">
+          Reorder this product
+        </a>
+      )}
+      {!working.length && !worse.length && none.length > 0 && (
+        <p className="mt-2 text-sm text-muted">
+          Before buying another bottle, check its active ingredient: a different product with the same one may not do better for you.
         </p>
       )}
     </section>

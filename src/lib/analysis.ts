@@ -1,6 +1,7 @@
 import { getCategory } from "./categories";
 import { sideDiff } from "./split";
-import { Concern, Session, Trial } from "./types";
+import { Concern, Session, Trial, TrialMode } from "./types";
+import { estimateNoise } from "./noise";
 import { Verdict, VerdictSession, decide } from "./verdict";
 
 const DAY = 86_400_000;
@@ -41,8 +42,35 @@ export function verdictSessions(trial: Trial, sessions: Session[], concern: Conc
   return out;
 }
 
-export function trialVerdict(trial: Trial, sessions: Session[], concern: Concern, asOfDay = Infinity): Verdict {
-  return decide({ mode: trial.mode, minDays: getCategory(trial.category).minDays, sessions: verdictSessions(trial, sessions, concern, asOfDay) });
+/** Split-face is used for a concern unless its gap is this many times noisier than the whole-face score. */
+export const SPLIT_FALLBACK_RATIO = 2;
+
+export interface Measurement {
+  mode: TrialMode;
+  /** Set when a split-face trial measures this concern whole-face instead. */
+  fallback?: { splitSigma: number; wholeSigma: number };
+}
+
+/**
+ * Which design to judge a concern with. In a split-face trial, the treated − untreated gap is used unless the
+ * user's own repeat shots show it is more than SPLIT_FALLBACK_RATIO× noisier than the whole-face raw score.
+ * Measured 2026-11-02 on real YouCam calls: redness gap ±1.4 vs raw ±2.2 (split), texture ±5.1 vs ±9.7 (split),
+ * pores ±13.0 vs ±2.0 (whole face).
+ */
+export function measurementFor(trial: Trial, sessions: Session[], concern: Concern, asOfDay = Infinity): Measurement {
+  if (trial.mode !== "split") return { mode: "whole" };
+  const split = estimateNoise(verdictSessions(trial, sessions, concern, asOfDay).map((s) => s.values));
+  const whole = estimateNoise(verdictSessions({ ...trial, mode: "whole" }, sessions, concern, asOfDay).map((s) => s.values));
+  if (split.source === "personal" && whole.source === "personal" && split.sigma > SPLIT_FALLBACK_RATIO * whole.sigma) {
+    return { mode: "whole", fallback: { splitSigma: split.sigma, wholeSigma: whole.sigma } };
+  }
+  return { mode: "split" };
+}
+
+export function trialVerdict(trial: Trial, sessions: Session[], concern: Concern, asOfDay = Infinity): Verdict & Measurement {
+  const m = measurementFor(trial, sessions, concern, asOfDay);
+  const t = { ...trial, mode: m.mode };
+  return { ...decide({ mode: m.mode, minDays: getCategory(trial.category).minDays, sessions: verdictSessions(t, sessions, concern, asOfDay) }), ...m };
 }
 
 /** Whole-face raw-score points per session (mean of shots), for the trend chart in either mode. */
