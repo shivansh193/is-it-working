@@ -1,0 +1,82 @@
+{
+  "_note": "One line per section, placed at the section start. ~140 wpm. 'spoken' goes to TTS, 'written' to the subtitles. Every figure is from the repo or a real run (see demo/STORYBOARD.md).",
+  "lines": [
+    {
+      "id": "hook",
+      "start": 0.3,
+      "room": 7.6,
+      "spoken": "Four weeks into a new serum, the mirror can't tell you if it's working. This app can.",
+      "written": "Four weeks into a new serum, the mirror can't tell you if it's working. This app can."
+    },
+    {
+      "id": "glance",
+      "start": 8.2,
+      "room": 11.6,
+      "spoken": "It runs in your phone's browser. Each photo goes to YouCam's skin analysis API through our server, and a tested rule gives the verdict.",
+      "written": "It runs in your phone's browser. Each photo goes to YouCam's Skin Analysis API through our server, and a tested rule gives the verdict."
+    },
+    {
+      "id": "ch1",
+      "start": 20.2,
+      "room": 19.6,
+      "spoken": "You start a trial: the product, and what you hope it fixes. For niacinamide, published trials run twelve weeks, so we won't judge before day twenty-eight. And we recommend split-face: the product goes on one cheek only, so the other cheek is the control.",
+      "written": "You start a trial: the product, and what you hope it fixes. For niacinamide, published trials run 12 weeks, so we won't judge before day 28. And we recommend split-face: the product goes on one cheek only, so the other cheek is the control."
+    },
+    {
+      "id": "ch2",
+      "start": 40.2,
+      "room": 29.6,
+      "spoken": "The baseline is three photos. The camera checks face size, angle, light and stillness first. For this video it's a stock clip through a fake camera, but every analysis is a real YouCam call. Three photos of the same face give three different numbers. That spread is your noise. Here, redness wobbles by about two points, and pores by nine, which is too noisy to trust.",
+      "written": "The baseline is three photos. The camera checks face size, angle, light and stillness first. For this video it's a stock clip through a fake camera, but every analysis is a real YouCam call. Three photos of the same face give three different numbers. That spread is your noise. Here, redness wobbles by about ±2 points, and pores by ±9, which is too noisy to trust."
+    },
+    {
+      "id": "youcam",
+      "start": 70.2,
+      "room": 11.6,
+      "spoken": "Under the hood: upload, create an H D skin analysis task, up to four concerns for twelve units, then poll. Tasks took five to seven seconds.",
+      "written": "Under the hood: upload, create an HD skin-analysis task, up to 4 concerns for 12 units, then poll. Tasks took 5–7 seconds."
+    },
+    {
+      "id": "ch3",
+      "start": 82.2,
+      "room": 15.6,
+      "spoken": "YouCam returns a mask for each concern, the same size as the photo. Face Mesh finds the midline, so each side of the face gets its own score, from the same photo, under the same light.",
+      "written": "YouCam returns a mask for each concern, the same size as the photo. Face Mesh finds the midline, so each side of the face gets its own score, from the same photo, under the same light."
+    },
+    {
+      "id": "design",
+      "start": 98.2,
+      "room": 11.6,
+      "spoken": "That's the point of split-face: sleep, light and the camera hit both cheeks equally. And raw scores, because the U I score squeezes real differences.",
+      "written": "That's the point of split-face: sleep, light and the camera hit both cheeks equally. And raw scores, because the UI score squeezes real differences."
+    },
+    {
+      "id": "ch4",
+      "start": 110.2,
+      "room": 30.1,
+      "spoken": "Here's how the verdict behaves, on a simulated six-week trial. At day twelve, it's too early. At day twenty-eight, the change is still inside the noise band, so, no effect yet. By day forty-four, redness clears the bar and texture doesn't. Every verdict shows its numbers, and the rebuy card answers in plain words, with what you've spent so far.",
+      "written": "Here's how the verdict behaves, on a simulated six-week trial. At day 12, it's too early. At day 28, the change is still inside the noise band, so, no effect yet. By day 44, redness clears the bar and texture doesn't. Every verdict shows its numbers, and the rebuy card answers in plain words, with what you've spent so far."
+    },
+    {
+      "id": "results",
+      "start": 140.7,
+      "room": 15.1,
+      "spoken": "What's measured: eleven real YouCam tasks, and the same photo always scores the same, so all the noise comes from the capture. What's weak: pores are too noisy, and the long trial is still simulated.",
+      "written": "What's measured: 11 real YouCam tasks, and the same photo always scores the same, so all the noise comes from the capture. What's weak: pores are too noisy, and the long trial is still simulated."
+    },
+    {
+      "id": "who",
+      "start": 156.2,
+      "room": 11.6,
+      "spoken": "It's for anyone halfway through a bottle, deciding whether to buy it again. And it gives a dermatologist real numbers instead of a feeling.",
+      "written": "It's for anyone halfway through a bottle, deciding whether to buy it again. And it gives a dermatologist real numbers instead of a feeling."
+    },
+    {
+      "id": "outro",
+      "start": 168.2,
+      "room": 6.6,
+      "spoken": "Is it working? Sometimes the honest answer is, not yet.",
+      "written": "Is it working? Sometimes the honest answer is: not yet."
+    }
+  ]
+}

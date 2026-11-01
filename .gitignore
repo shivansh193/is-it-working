@@ -54,3 +54,4 @@ fixtures/real/
 # demo recordings and renders (large; stock footage)
 /demo/out/
 /demo/build/
+/demo/final/
