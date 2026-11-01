@@ -8,6 +8,8 @@ interface Guide {
   ok: boolean;
   msg: string;
   light?: LightCheck;
+  /** Raw check values, exposed as a data attribute for debugging and tuning. */
+  metrics?: string;
 }
 
 /**
@@ -91,10 +93,13 @@ export function Capture({
       if (!face) g = { ok: false, msg: "Centre your face in the outline", light };
       else if (face.widthFrac < 0.6) g = { ok: false, msg: "Move closer — fill the outline", light };
       else if (face.widthFrac > 0.9) g = { ok: false, msg: "Move back a little", light };
-      else if (Math.abs(face.yaw) > 0.08) g = { ok: false, msg: "Face the camera straight on", light };
+      // Thresholds calibrated 2026-11-01 on two straight-on stock faces, which read |yaw| ≈ 0.13–0.15 and
+      // moved ~10 between checks (frames ~0.4 s apart). The first guesses (0.08, 7) rejected both.
+      else if (Math.abs(face.yaw) > 0.2) g = { ok: false, msg: "Face the camera straight on", light };
       else if (!light.ok) g = { ok: false, msg: light.hint!, light };
-      else if (mv > 7) g = { ok: false, msg: "Hold still", light };
+      else if (mv > 14) g = { ok: false, msg: "Hold still", light };
       else g = { ok: true, msg: "Looks good — hold still and tap", light };
+      if (face) g.metrics = `w=${face.widthFrac.toFixed(3)} yaw=${face.yaw.toFixed(3)} light=${light.mean.toFixed(0)} bal=${light.balance.toFixed(3)} mv=${mv.toFixed(1)}`;
       if (alive) setGuide(g);
       setTimeout(loop, 380);
     };
@@ -172,7 +177,7 @@ export function Capture({
 
       {stream && (
         <>
-          <p className="text-center text-base font-medium" aria-live="polite" style={{ color: guide.ok ? "var(--v-working)" : "var(--ink)" }}>
+          <p className="text-center text-base font-medium" aria-live="polite" data-metrics={guide.metrics} style={{ color: guide.ok ? "var(--v-working)" : "var(--ink)" }}>
             {busy ? "Analysing…" : wait > 0 ? `Next shot in ${wait}s — relax, then re-centre` : guide.msg}
           </p>
           <button className="btn btn-primary w-full py-4 text-lg" disabled={!ready} onClick={snap}>

@@ -41,7 +41,8 @@ export function checkLight(img: ImageData): LightCheck {
   let hint: string | undefined;
   if (mean < 80) hint = "Too dark — face a window or a lamp";
   else if (mean > 210 || clipped > 0.08) hint = "Too bright — step back from the light";
-  else if (Math.abs(balance) > 0.15) hint = "Light is uneven — turn so both cheeks are lit the same";
+  // The band includes hair and background, so even light reads ~0.2 on a real face; 0.3 still catches side light.
+  else if (Math.abs(balance) > 0.3) hint = "Light is uneven — turn so both cheeks are lit the same";
   return { mean, clipped, balance, ok: !hint, hint };
 }
 

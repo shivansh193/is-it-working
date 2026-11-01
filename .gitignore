@@ -50,3 +50,7 @@ fixtures/real/
 
 .vercel
 .env*
+
+# demo recordings and renders (large; stock footage)
+/demo/out/
+/demo/build/

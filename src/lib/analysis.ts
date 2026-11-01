@@ -13,7 +13,8 @@ export function localDate(d = new Date()): string {
 
 export function dayOf(trial: Trial, iso: string): number {
   const start = new Date(trial.startDate + "T00:00:00").getTime();
-  return Math.max(0, Math.round((new Date(iso).getTime() - start) / DAY));
+  // Whole days since the start date (late evening on day 0 is still day 0).
+  return Math.max(0, Math.floor((new Date(iso).getTime() - start) / DAY));
 }
 
 /** Per-shot values the verdict runs on: raw score (whole face) or treated − untreated side score (split face). */
