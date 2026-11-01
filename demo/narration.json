@@ -46,35 +46,42 @@
     {
       "id": "design",
       "start": 98.2,
-      "room": 11.6,
-      "spoken": "That's the point of split-face: sleep, light and the camera hit both cheeks equally. And raw scores, because the U I score squeezes real differences.",
-      "written": "That's the point of split-face: sleep, light and the camera hit both cheeks equally. And raw scores, because the UI score squeezes real differences."
+      "room": 8.6,
+      "spoken": "Split-face cancels sleep, light and the camera. And we use raw scores, because the U I score squeezes real differences.",
+      "written": "Split-face cancels sleep, light and the camera. And we use raw scores, because the UI score squeezes real differences."
+    },
+    {
+      "id": "validation",
+      "start": 107.2,
+      "room": 15.1,
+      "spoken": "Does it detect anything? We tinted one cheek of a stock face red. The redness gap moved seventeen points, far beyond its noise. Pores didn't move, and they're too noisy to split, so they're judged whole-face.",
+      "written": "Does it detect anything? We tinted one cheek of a stock face red. The redness gap moved 17 points, far beyond its noise. Pores didn't move, and they're too noisy to split, so they're judged whole-face."
     },
     {
       "id": "ch4",
-      "start": 110.2,
-      "room": 30.1,
-      "spoken": "Here's how the verdict behaves, on a simulated six-week trial. At day twelve, it's too early. At day twenty-eight, the change is still inside the noise band, so, no effect yet. By day forty-four, redness clears the bar and texture doesn't. Every verdict shows its numbers, and the rebuy card answers in plain words, with what you've spent so far.",
-      "written": "Here's how the verdict behaves, on a simulated six-week trial. At day 12, it's too early. At day 28, the change is still inside the noise band, so, no effect yet. By day 44, redness clears the bar and texture doesn't. Every verdict shows its numbers, and the rebuy card answers in plain words, with what you've spent so far."
+      "start": 122.7,
+      "room": 25.4,
+      "spoken": "Here's how the verdict behaves, on a simulated six-week trial. At day twelve, it's too early. At day twenty-eight, the change is still inside the noise band, so, no effect yet. By day forty-four, redness clears the bar and texture doesn't. Every verdict shows its numbers and the rule behind it.",
+      "written": "Here's how the verdict behaves, on a simulated six-week trial. At day 12, it's too early. At day 28, the change is still inside the noise band, so, no effect yet. By day 44, redness clears the bar and texture doesn't. Every verdict shows its numbers and the rule behind it."
     },
     {
       "id": "results",
-      "start": 140.7,
-      "room": 15.1,
-      "spoken": "What's measured: eleven real YouCam tasks, and the same photo always scores the same, so all the noise comes from the capture. What's weak: pores are too noisy, and the long trial is still simulated.",
-      "written": "What's measured: 11 real YouCam tasks, and the same photo always scores the same, so all the noise comes from the capture. What's weak: pores are too noisy, and the long trial is still simulated."
+      "start": 148.5,
+      "room": 12.6,
+      "spoken": "What's measured: twenty-three real YouCam tasks, identical scores for the same photo, and a split-face test that works for redness. What's weak: no real multi-week trial yet.",
+      "written": "What's measured: 23 real YouCam tasks, identical scores for the same photo, and a split-face test that works for redness. What's weak: no real multi-week trial yet."
     },
     {
       "id": "who",
-      "start": 156.2,
-      "room": 11.6,
-      "spoken": "It's for anyone halfway through a bottle, deciding whether to buy it again. And it gives a dermatologist real numbers instead of a feeling.",
-      "written": "It's for anyone halfway through a bottle, deciding whether to buy it again. And it gives a dermatologist real numbers instead of a feeling."
+      "start": 161.5,
+      "room": 7.6,
+      "spoken": "It's for anyone halfway through a bottle, deciding whether to buy it again.",
+      "written": "It's for anyone halfway through a bottle, deciding whether to buy it again."
     },
     {
       "id": "outro",
-      "start": 168.2,
-      "room": 6.6,
+      "start": 169.5,
+      "room": 5.3,
       "spoken": "Is it working? Sometimes the honest answer is, not yet.",
       "written": "Is it working? Sometimes the honest answer is: not yet."
     }

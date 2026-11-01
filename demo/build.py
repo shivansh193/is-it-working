@@ -102,18 +102,18 @@ def build_plan(marks: dict) -> list[dict]:
                 ("Side score", "Detections per side, on the raw-score scale"),
             ],
         },
-        {"kind": "slide", "id": "design", "dur": 12.0},
+        {"kind": "slide", "id": "design", "dur": 9.0},
+        {"kind": "slide", "id": "validation", "dur": 14.0},
         {"kind": "card", "n": 4, "title": "The verdict (simulated)", "dur": 1.5},
         {
             "kind": "chapter", "id": "ch4", "clip": "ch4_demo", "n": 4, "title": "The verdict",
-            "segs": [(0.8, 29.8)],
+            "segs": [(0.8, 26.6)],
             "caps": [
                 (0.0, "A simulated 6-week trial, labelled on screen."),
                 ("@" + str(m("ch4_demo", "day 12 too early")), "Day 12: too early to tell."),
                 ("@" + str(m("ch4_demo", "day 28")), "Day 28: the change is inside the noise band."),
                 ("@" + str(m("ch4_demo", "day 44 working")), "Day 44: redness beats the bar. Texture doesn't."),
                 ("@" + str(m("ch4_demo", "why opened")), "Every verdict shows its numbers and its rule."),
-                ("@" + str(m("ch4_demo", "rebuy card")), "Should I rebuy? A plain answer, with the cost so far."),
             ],
             "facts": [
                 ("Data", "Simulated: placeholder baseline + documented drift"),
@@ -121,9 +121,9 @@ def build_plan(marks: dict) -> list[dict]:
                 ("Safety", "'Getting worse' can fire early"),
             ],
         },
-        {"kind": "slide", "id": "results", "dur": 15.5},
-        {"kind": "slide", "id": "who", "dur": 12.0},
-        {"kind": "outro", "dur": 7.0},
+        {"kind": "slide", "id": "results", "dur": 13.0},
+        {"kind": "slide", "id": "who", "dur": 8.0},
+        {"kind": "outro", "dur": 5.7},
     ]
 
     t = 0.0
@@ -198,20 +198,30 @@ SLIDES = {
             ("Same image, same score", "YouCam scored one photo twice identically: all noise comes from the capture"),
         ],
     },
+    "validation": {
+        "label": "Positive control · real YouCam calls",
+        "title": "Does it actually detect a change?",
+        "cols": 2,
+        "cards": [
+            ("6 untreated shots", "Redness gap between the cheeks varied only ±1.4 points"),
+            ("Known red tint on one cheek", "The gap moved 17.2 points, on the right side: ≈22× its error"),
+            ("Negative control", "The same tint didn't move pores (+0.9)"),
+            ("Pores", "Their gap jumped ±13, so they're judged on the whole-face trend"),
+            ("Caveat", "One stock face, fake camera, digital tint: it tests the measurement, not a product"),
+        ],
+    },
     "results": {
         "label": "Results",
         "title": "What we measured, and what's weak",
         "cols": 2,
         "compact": True,
         "cards": [
-            ("Measured · real runs", "11 real YouCam HD tasks; same photo twice → identical scores"),
+            ("Measured · real runs", "23 real YouCam HD tasks; same photo twice → identical scores"),
             ("Measured · speed", "4.9–7.3 s per task; 7–10 s per photo end to end, masks included"),
-            ("Measured · noise (2 baselines)", "Redness ±1.6 and ±2.4 · pores ±20.5 and ±9.3"),
-            ("Measured · tests", "38 unit tests on the rule, noise, split maths and parser"),
-            ("Weak · pores", "Too noisy for split-face so far. The noise bar stops false calls."),
+            ("Measured · split-face", "Redness: stable (±1.4) and sensitive (tint → 17.2 points). Pores: not."),
+            ("Measured · tests", "41 unit tests on the rule, design choice, noise, split maths, parser"),
             ("Weak · no real trial yet", "The verdict demo is simulated, and clears its bar by 0.1 (4.6 vs 4.5)"),
-            ("Weak · placeholders", "Noise prior σ = 3 is a guess; 7 of 10 timing references unchecked"),
-            ("Weak · footage", "Baselines used stock video through a fake camera, not a real user"),
+            ("Weak · one face", "Validation used one stock face and a fake camera; the noise prior σ = 3 is a guess"),
         ],
     },
     "who": {
@@ -219,7 +229,7 @@ SLIDES = {
         "title": "Before you rebuy",
         "cols": 3,
         "cards": [
-            ("Mid-bottle", "Someone 4 weeks into a ₹2,500 serum, deciding whether to buy it again"),
+            ("Mid-bottle", "Someone 4 weeks into a ₹2,500 serum, deciding whether to reorder it"),
             ("At the dermatologist", "A summary image with the numbers and no face"),
             ("Next", "A dermatologist view; brand efficacy panels from opt-in split-face data"),
         ],

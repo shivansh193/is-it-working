@@ -13,33 +13,34 @@
 
 Recordings, renders and the stock clip are git-ignored (`demo/out/`, `demo/build/`).
 
-## Voice fit (Kokoro `af_heart`, speed 1.0)
+## Voice fit (Kokoro `af_heart`, speed 1.0) — v2 cut
 
 Every line fits its slot at normal speed; nothing was sped up.
 
 | Line | Starts | Length | Room | Tempo | Ends |
 |---|---|---|---|---|---|
-| hook | 0.3 s | 5.25 s | 7.75 s | 1.00 | 5.5 s |
-| glance | 8.2 | 9.35 | 11.85 | 1.00 | 17.5 |
-| ch1 | 20.2 | 16.02 | 19.85 | 1.00 | 36.2 |
-| ch2 | 40.2 | 22.80 | 29.85 | 1.00 | 63.0 |
-| youcam | 70.2 | 10.12 | 11.85 | 1.00 | 80.3 |
-| ch3 | 82.2 | 12.18 | 15.85 | 1.00 | 94.3 |
-| design | 98.2 | 9.62 | 11.85 | 1.00 | 107.8 |
-| ch4 | 110.2 | 21.50 | 30.35 | 1.00 | 131.7 |
-| results | 140.7 | 13.03 | 15.35 | 1.00 | 153.7 |
-| who | 156.2 | 8.43 | 11.85 | 1.00 | 164.6 |
-| outro | 168.2 | 4.00 | 6.65 | 1.00 | 172.2 |
+| hook | 0.3 s | 5.25 s | 7.75 s | 1.00 | 5.54 s |
+| glance | 8.2 s | 9.35 s | 11.85 s | 1.00 | 17.53 s |
+| ch1 | 20.2 s | 16.02 s | 19.85 s | 1.00 | 36.2 s |
+| ch2 | 40.2 s | 22.80 s | 29.85 s | 1.00 | 62.98 s |
+| youcam | 70.2 s | 10.12 s | 11.85 s | 1.00 | 80.3 s |
+| ch3 | 82.2 s | 12.18 s | 15.85 s | 1.00 | 94.35 s |
+| design | 98.2 s | 8.10 s | 8.85 s | 1.00 | 106.3 s |
+| validation | 107.2 s | 13.22 s | 15.35 s | 1.00 | 120.4 s |
+| ch4 | 122.7 s | 18.82 s | 25.65 s | 1.00 | 141.5 s |
+| results | 148.5 s | 11.53 s | 12.85 s | 1.00 | 160.0 s |
+| who | 161.5 s | 4.40 s | 7.85 s | 1.00 | 165.89 s |
+| outro | 169.5 s | 4.00 s | 5.35 s | 1.00 | 173.49 s |
 
 ## Checks on the final files
 
 - Both versions 175.000 s; AAC 48 kHz, 192 kb/s; loudness-normalised to −16 LUFS (true-peak −1.5 dB).
-- Subtitles: 43 cues, no overlaps (≥ 40 ms gaps), ≤ 2 lines of ≤ 42 characters.
+- Subtitles: 44 cues, no overlaps (≥ 40 ms gaps), ≤ 2 lines of ≤ 42 characters.
 - Hyperframes `check`: runtime, layout, contrast, motion all pass; lint 0 errors.
 
 ## Worth checking by watching
 
-- Kokoro reads faster than 140 wpm, so most sections end with 2–9 s of music only (longest: chapters 2 and 4).
+- v2 (2026-11-02) adds a positive-control slide and trims the silences: the longest music-only gaps are now ~7 s after chapter 2 and ~7 s after chapter 4.
 - Chapter 2's waits between photos are cut; the caption and side panel say so.
 - The app's live-check text flickers to "Light is uneven" once in chapter 2: the stock clip's balance sits near the threshold. It's the real app behaviour, left in.
 - The fake-camera clip is padded with a blurred copy of itself so the face fits the frame; its edges show in the camera preview.
